@@ -14,7 +14,7 @@ Installation
 
 ###How did I get it to work with Steroids###
 
-- Do ```meteor run android-device``` or ```meteor build```
+- Do ```meteor run android-device``` or ```meteor build <bundle path> --server <host>:<port>```
 - After you've done this, you'll see that Meteor had created a Cordova project in the ```.meteor/local/cordova-build``` (it's a hidden folder in your app) folder of your app.
 - ```cd``` into that folder in a new terminal and run ```steroids connect```. Now your Meteor app has been opened with Steroids!
 - You can now AppGyver Scan it, but unfortunately you just see a blank screen because Steroids doesn't load Cordova plugins, one of which is required to load the Meteor app.
