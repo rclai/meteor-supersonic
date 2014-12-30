@@ -22,7 +22,7 @@ if (Meteor.isClient) {
         supersonic.logger.log("Alert closed.");
       });
 
-      // Haven't been able to verify that this works because steroids doesn't like Meteor! Yet?
+      // Haven't been able to verify that this does not work because steroids doesn't like Meteor! Yet?
       supersonic.ui.navigationBar.setStyle("background-color:blue;color:white").then(function() {
         supersonic.logger.log("Navigation bar style was set.");
       });
