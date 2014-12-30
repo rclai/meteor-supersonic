@@ -1,7 +1,7 @@
 Meteor Supersonic Integration
 =============================
 
-An attempt at integrating AppGyver's SuperSonic UI with the Meteor framework of awesomemess. I put out what I've done so far in order to encourage community contribution (in case AppGyver decides not to do anything about it).
+An attempt at integrating AppGyver's SuperSonic UI with the Meteor framework of awesomemess. I put out what I've done so far in order to encourage community contribution (in case AppGyver decides not to do anything about it). This was started as a result of this issue: https://github.com/AppGyver/steroids/issues/716
 
 ##THIS IS WORK IN PROGRESS (NOTHING REALLY AMAZING TO SEE, just read the below stuff and the code)##
 
