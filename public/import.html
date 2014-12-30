@@ -1,0 +1,824 @@
+<style></style>
+
+<script>
+
+/*
+  * @namespace components
+  * @name super-data
+  * @component
+  * @description
+  * <p class="advanced-panel">
+  *   Requires <a href="http://handlebarsjs.com" target="_blank">Handlebars.js</a> to be included in your app's layout. Install Handlebars with <code>$ bower install handlebars</code> and load it via a <code>&lt;script src="/components/handlebars/handlebars.min.js"&gt;&lt;/script&gt;</code> tag in your <code>&lt;head&gt;</code> element.
+  *  <br><br>
+  *  Will not work with AngularJS – fetch the cloud data resource in the controller and use regular Angular binding instead. (Alternatively, you can use the <code>ng-non-bindable</code> attribute in the <code>&lt;super-data&gt;</code> element, but that's a suboptimal solution.)
+  * </p>
+  *
+  * Use data from a Supersonic Data record in HTML DOM. The attributes of the object can be accessed via double-mustache notation, e.g. `{{ attributeName }}` will render `object.attributeName`. Fetches the record based on the view's current `id` parameter (set via `supersonic.ui.layers.push` or the `data-params-id` attribute in a `<super-navigate>` element).
+  * @exampleHtml
+  * <!-- In index.html -->
+  * <super-navigate view-id="show" params="{id: 1}"
+  *
+  * <!-- In show.html, shows Name and Description of Task item with id 1 -->
+  * <super-data model="Task">
+  *   <h2>{{ Name }}</h2>
+  *   <p>{{ Description }}</p>
+  * </super-data>
+ */
+
+(function() {
+  var SuperDataPrototype;
+
+  SuperDataPrototype = Object.create(HTMLElement.prototype);
+
+  SuperDataPrototype.attachedCallback = function() {
+    var Model, model_name;
+    this.__visibility_listener = supersonic.ui.views.current.whenHidden((function(_this) {
+      return function() {
+        return _this.shadowRoot.innerHTML = "";
+      };
+    })(this));
+    model_name = this.getAttribute("model");
+    if (model_name != null) {
+      Model = supersonic.data.model(model_name);
+      return this.__data_listener = supersonic.ui.views.current.params.onValue((function(_this) {
+        return function(params) {
+          return Model.find(params.id).then(function(object) {
+            return _this.shadowRoot.innerHTML = Handlebars.compile("" + _this.__template)(object);
+          });
+        };
+      })(this));
+    }
+  };
+
+  SuperDataPrototype.createdCallback = function() {
+    this.__template = this.innerHTML;
+    this.innerHTML = "";
+    return this.createShadowRoot();
+  };
+
+  SuperDataPrototype.detachedCallback = function() {
+    if (this.__data_listener != null) {
+      this.__data_listener();
+    }
+    if (this.__visibility_listener()) {
+      return this.__visibility_listener();
+    }
+  };
+
+  document.registerElement("super-data", {
+    prototype: SuperDataPrototype
+  });
+
+}).call(this);
+
+</script>
+
+<style></style>
+
+<script>
+
+/*
+  * @namespace components
+  * @name super-data-repeat
+  * @component
+  * @description
+  * <p class="advanced-panel">
+  *   Requires <a href="http://handlebarsjs.com" target="_blank">Handlebars.js</a> to be included in your app's layout. Install Handlebars with <code>$ bower install handlebars</code> and load it via a <code>&lt;script src="/components/handlebars/handlebars.min.js"&gt;&lt;/script&gt;</code> tag in your <code>&lt;head&gt;</code> element.
+  *  <br><br>
+  *  Will not work with AngularJS – use <code>ng-repeat</code> instead. (Alternatively, you can use the <code>ng-non-bindable</code> attribute in the <code>&lt;super-data-repeat&gt;</code> element, but that's a suboptimal solution.)
+  * </p>
+  *
+  * Repeat all data from a Supersonic Data Model in HTML DOM. Attributes of each data object can be accessed with double-mustache notation, i.e. `{{ attributeName }}` will render `object.attributeName`.
+  * @exampleHtml
+  * <ul class="list">
+  *   <super-data-repeat model="task">
+  *     <li class="item">{{ Description }}</li>
+  *   </super-data-repeat>
+  * </ul>
+ */
+
+(function() {
+  var SuperDataRepeatPrototype;
+
+  SuperDataRepeatPrototype = Object.create(HTMLElement.prototype);
+
+  SuperDataRepeatPrototype.attachedCallback = function() {
+    var Model, model_name;
+    model_name = this.getAttribute("model");
+    if (model_name != null) {
+      Model = supersonic.data.model(model_name);
+      return this.__listener = Model.all().whenChanged((function(_this) {
+        return function(items) {
+          return _this.shadowRoot.innerHTML = Handlebars.compile("{{#each items}}" + _this.__template + "{{/each}}")({
+            items: items
+          });
+        };
+      })(this));
+    }
+  };
+
+  SuperDataRepeatPrototype.createdCallback = function() {
+    this.__template = this.innerHTML;
+    this.innerHTML = "";
+    return this.createShadowRoot();
+  };
+
+  SuperDataRepeatPrototype.detachedCallback = function() {
+    if (this.__listener != null) {
+      return this.__listener();
+    }
+  };
+
+  document.registerElement("super-data-repeat", {
+    prototype: SuperDataRepeatPrototype
+  });
+
+}).call(this);
+
+</script>
+
+<style></style>
+<script>
+(function() {
+  var SuperModalHidePrototype;
+
+  SuperModalHidePrototype = Object.create(HTMLElement.prototype);
+
+
+  /*
+    * @namespace components
+    * @name super-modal-hide
+    * @component
+    * @description
+    * Hides an open modal on screen. Uses `supersonic.ui.modal.hide()` internally.
+    * @attribute action="click" The action used to trigger the transition.
+    * @exampleHtml
+    * <!-- The action attribute is optional -->
+    * <super-modal-hide>Go back</super-modal-hide>
+    *
+    * <!-- The default action can be overridden -->
+    * <super-modal-hide action="touchmove">Hide modal</super-modal-hide>
+   */
+
+  SuperModalHidePrototype.createdCallback = function() {
+    var action;
+    action = this.getAttribute("action") || "click";
+    return this.addEventListener(action, function() {
+      return supersonic.ui.modal.hide();
+    });
+  };
+
+  document.registerElement("super-modal-hide", {
+    prototype: SuperModalHidePrototype
+  });
+
+}).call(this);
+
+</script>
+
+<style></style>
+<script>
+(function() {
+  var SuperModalShowPrototype;
+
+  SuperModalShowPrototype = Object.create(HTMLElement.prototype);
+
+
+  /*
+    * @namespace components
+    * @name super-modal-show
+    * @component
+    * @description
+    * Shows a modal. Uses `supersonic.ui.modal.show` internally.
+    * @attribute location The route or URL for the view to be shown. Either `location` or `view-id` must be set.
+    * @attribute view-id The id of a started View that will be navigated to. If `view-id` is set, `location` will be ignored.
+    * @attribute action="click" The action used to trigger the transition.
+    * @exampleHtml
+    * <!-- The action attribute is optional -->
+    * <super-modal-show location="cars#edit">Edit Car</super-modal-show>
+    *
+    * <!-- External URLs work too -->
+    * <super-modal-show location="http://google.com">Open Google</super-modal-show>
+    *
+    * <!-- The default action can be overridden -->
+    * <super-modal-show location="meeting#details" action="touchmove">Show meeting details</super-modal-show>
+   */
+
+  SuperModalShowPrototype.createdCallback = function() {
+    var action;
+    action = this.getAttribute("action") || "click";
+    return this.addEventListener(action, (function(_this) {
+      return function() {
+        var dataKey, datasetKeys, key, locationOrId, params, _i, _len;
+        locationOrId = _this.getAttribute("view-id");
+        if (locationOrId == null) {
+          locationOrId = _this.getAttribute("location");
+        }
+        if (locationOrId == null) {
+          throw new Error("Either view-id or location attribute must be set for a super-modal-show element");
+        }
+        params = null;
+        datasetKeys = Object.keys(_this.dataset);
+        if ((datasetKeys != null) && datasetKeys.length) {
+          for (_i = 0, _len = datasetKeys.length; _i < _len; _i++) {
+            dataKey = datasetKeys[_i];
+            if (!(/^params/.test(dataKey))) {
+              continue;
+            }
+            if (params == null) {
+              params = {};
+            }
+            key = dataKey.replace(/^params(.*)$/, "$1").toLowerCase();
+            params[key] = _this.dataset[dataKey];
+          }
+        }
+        return supersonic.ui.modal.show(locationOrId, {
+          params: params
+        })["catch"](function(error) {
+          throw new Error("Failed to open modal: " + error);
+        });
+      };
+    })(this));
+  };
+
+  document.registerElement("super-modal-show", {
+    prototype: SuperModalShowPrototype
+  });
+
+}).call(this);
+
+</script>
+
+<style></style>
+<script>
+
+/*
+  * @namespace components
+  * @name super-navbar
+  * @component
+  * @description
+  * Displays a view-specific native navigation bar. To set a title text and buttons for the navigation bar, use the `<super-navbar-title>` and `<super-navbar-button>` components.
+  * @exampleHtml
+  * <!-- Navbar with a title -->
+  * <super-navbar>
+  *
+  *   <super-navbar-title>I'm native!</super-navbar-title>
+  *
+  * </super-navbar>
+ */
+
+(function() {
+  var SuperNavbar, observeAttributesOnElement,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  observeAttributesOnElement = function(element, attributes) {
+    return supersonic.internal.Bacon.fromBinder(function(sink) {
+      var observer;
+      observer = new MutationObserver(function(mutations) {
+        var changes, mutation, _i, _len, _ref;
+        changes = {};
+        for (_i = 0, _len = mutations.length; _i < _len; _i++) {
+          mutation = mutations[_i];
+          if ((mutation.type === "attributes") && (_ref = mutation.attributeName, __indexOf.call(attributes, _ref) >= 0)) {
+            changes[mutation.attributeName] = mutation.target.getAttribute(mutation.attributeName) || "";
+          }
+        }
+        return sink(changes);
+      });
+      observer.observe(element, {
+        attributes: true,
+        attributeFilter: attributes
+      });
+      return function() {
+        return observer.disconnect();
+      };
+    }).toProperty((function() {
+      var attributeName, initial, _i, _len;
+      initial = {};
+      for (_i = 0, _len = attributes.length; _i < _len; _i++) {
+        attributeName = attributes[_i];
+        initial[attributeName] = element.getAttribute(attributeName) || "";
+      }
+      return initial;
+    })());
+  };
+
+  document.registerElement("super-navbar", SuperNavbar = (function(_super) {
+    __extends(SuperNavbar, _super);
+
+    function SuperNavbar() {
+      return SuperNavbar.__super__.constructor.apply(this, arguments);
+    }
+
+    SuperNavbar.prototype._leftButtons = null;
+
+    SuperNavbar.prototype._leftButtons = null;
+
+    SuperNavbar.prototype._propertiesChanged = null;
+
+    SuperNavbar.prototype._properties = null;
+
+    SuperNavbar.prototype.getButtons = function() {
+      return {
+        left: this._leftButtons,
+        right: this._rightButtons
+      };
+    };
+
+    SuperNavbar.prototype.isHidden = function() {
+      var style;
+      style = window.getComputedStyle(this);
+      if (style.display === "none" || style.visibility === "hidden") {
+        return true;
+      }
+    };
+
+    SuperNavbar.prototype.addButton = function(button, side) {
+      if (side == null) {
+        side = "left";
+      }
+      if (side === "right") {
+        this._rightButtons.push(button);
+      } else {
+        this._leftButtons.push(button);
+      }
+      return this.onButtonsChanged();
+    };
+
+    SuperNavbar.prototype.updateButton = function(button) {
+      var candidate, idx, _i, _j, _len, _len1, _ref, _ref1;
+      _ref = this._leftButtons;
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        candidate = _ref[idx];
+        if (!(candidate === button)) {
+          continue;
+        }
+        this._leftButtons[idx] = button;
+        this.onButtonsChanged();
+        return;
+      }
+      _ref1 = this._rightButtons;
+      for (idx = _j = 0, _len1 = _ref1.length; _j < _len1; idx = ++_j) {
+        candidate = _ref1[idx];
+        if (!(candidate === button)) {
+          continue;
+        }
+        this._rightButtons[idx] = button;
+        this.onButtonsChanged();
+        return;
+      }
+    };
+
+    SuperNavbar.prototype.changeButtonSide = function(button, side) {
+      if (side == null) {
+        side = "left";
+      }
+      this._removeButtonSilently(button);
+      return this.addButton(button, side);
+    };
+
+    SuperNavbar.prototype.removeButton = function(button) {
+      this._removeButtonSilently(button);
+      return this.onButtonsChanged();
+    };
+
+    SuperNavbar.prototype._removeButtonSilently = function(button) {
+      var candidate, idx, _i, _j, _len, _len1, _ref, _ref1;
+      _ref = this._leftButtons;
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        candidate = _ref[idx];
+        if (!(candidate === button)) {
+          continue;
+        }
+        this._leftButtons.splice(idx, 1);
+        return;
+      }
+      _ref1 = this._rightButtons;
+      for (idx = _j = 0, _len1 = _ref1.length; _j < _len1; idx = ++_j) {
+        candidate = _ref1[idx];
+        if (!(candidate === button)) {
+          continue;
+        }
+        this._rightButtons.splice(idx, 1);
+        return;
+      }
+    };
+
+    SuperNavbar.prototype.onButtonsChanged = function() {
+      return this._propertiesChanged.push("buttons");
+    };
+
+    SuperNavbar.prototype.setTitle = function(title) {
+      this._properties.title = title;
+      return this._propertiesChanged.push("title");
+    };
+
+    SuperNavbar.prototype.attachedCallback = function() {
+      this._properties = {};
+      this._leftButtons = [];
+      this._rightButtons = [];
+      this._propertiesChanged = new supersonic.internal.Bacon.Bus;
+      this._unsubscribeFromAttributeChanges = observeAttributesOnElement(this, ["style", "class", "id"]).onValue((function(_this) {
+        return function(attributes) {
+          var key, value, _results;
+          _results = [];
+          for (key in attributes) {
+            value = attributes[key];
+            _this._properties[key] = value;
+            _results.push(_this._propertiesChanged.push(key));
+          }
+          return _results;
+        };
+      })(this));
+      return this._unsubscribeFromPropertyChanges = supersonic.ui.views.current.visibility.flatMapLatest((function(_this) {
+        return function(visible) {
+          if (visible) {
+            return _this._propertiesChanged.startWith('all');
+          } else {
+            return supersonic.internal.Bacon.never();
+          }
+        };
+      })(this)).bufferWithTime(20).onValue((function(_this) {
+        return function(changed) {
+          if (_this.isHidden()) {
+            return supersonic.ui.navigationBar.hide();
+          } else {
+            supersonic.ui.navigationBar.setClass(_this._properties["class"] || "");
+            supersonic.ui.navigationBar.setStyle(_this._properties.style || "");
+            supersonic.ui.navigationBar.setStyleId(_this._properties.id || "");
+            supersonic.ui.navigationBar.update({
+              title: _this._properties.title || " ",
+              buttons: _this.getButtons()
+            });
+            return supersonic.ui.navigationBar.show();
+          }
+        };
+      })(this));
+    };
+
+    SuperNavbar.prototype.detachedCallback = function() {
+      this._unsubscribeFromAttributeChanges();
+      this._unsubscribeFromPropertyChanges();
+      return supersonic.ui.navigationBar.hide();
+    };
+
+    return SuperNavbar;
+
+  })(HTMLElement));
+
+}).call(this);
+
+</script>
+
+<style></style>
+<script>
+
+/*
+  * @namespace components
+  * @name super-navbar-button
+  * @component
+  * @description
+  * When used inside the `<super-navbar>` element, creates a button that will be displayed on the navigation bar. Only text content is supported for the button title.
+  * @attribute side="left" Determines the position of the button on the navigation bar. Allowed values are "left" and "right". If multiple buttons are defined for one side, they will be displayed in order.
+  * @attribute onclick= When the native button is tapped, a `click` event is fired on the `<super-navbar-button>` element. This means you can use the `onclick` attribute, or any other framework or method that listens for `click` events.
+  * @attribute location A route or a URL that will be [navigated to](/ui-and-navigation/navigation/) when the button is tapped. **Note:** If `location` is set, a `click` event will not be fired when the button is tapped.
+  * @attribute view-id The id of a started View that will be [navigated to](/ui-and-navigation/navigation/) when the button is tapped. **Note:** If `view-id` is set, `location` will be ignored and a `click` event will not be fired when the button is tapped.
+
+  * @exampleHtml
+  * <super-navbar>
+  *
+  *   <!-- Button using routes -->
+  *   <super-navbar-button location="settings#index">Title</super-navbar-button>
+  *
+  *   <!-- Button using a started View id -->
+  *   <super-navbar-button view-id="settingsView">Title</super-navbar-button>
+  *
+  *   <!-- Button with an AngularJS callback -->
+  *   <super-navbar-button ng-click="myFunction()">Click me!</super-navbar-button>
+  *
+  *   <!-- Button on right side of the navigation bar -->
+  *   <super-navbar-button side="right">Settings</super-navbar-button>
+  *
+  * </super-navbar>
+ */
+
+(function() {
+  var SuperNavbarButtonPrototype, observer;
+
+  observer = new MutationObserver(function(mutations) {
+    var mutation, _i, _len;
+    for (_i = 0, _len = mutations.length; _i < _len; _i++) {
+      mutation = mutations[_i];
+      if (mutation.type === "childList") {
+        mutation.target._setButtonTitle();
+        mutation.target.updateOnNavbar();
+      }
+      if (mutation.type === "attributes") {
+        if (mutation.attributeName === "side") {
+          mutation.target._side = mutation.target.getAttribute("side");
+          mutation.target.updatePositionOnNavbar();
+          return;
+        }
+        if (mutation.attributeName === "location") {
+          mutation.target._setButtonAction();
+          mutation.target.updateOnNavbar();
+          return;
+        }
+      }
+    }
+  });
+
+  SuperNavbarButtonPrototype = Object.create(HTMLElement.prototype);
+
+  Object.defineProperty(SuperNavbarButtonPrototype, "side", {
+    set: function(side) {
+      return this._side = side;
+    },
+    get: function() {
+      return this._side;
+    }
+  });
+
+  SuperNavbarButtonPrototype.addToNavbar = function() {
+    return this.parentNode.addButton(this._button, this._side);
+  };
+
+  SuperNavbarButtonPrototype.updatePositionOnNavbar = function() {
+    return this.parentNode.changeButtonSide(this._button, this._side);
+  };
+
+  SuperNavbarButtonPrototype.removeFromNavbar = function() {
+    return this.parentNode.removeButton(this._button);
+  };
+
+  SuperNavbarButtonPrototype.updateOnNavbar = function() {
+    return this.parentNode.updateButton(this._button);
+  };
+
+  SuperNavbarButtonPrototype._setButtonAction = function() {
+    var viewId;
+    viewId = this.getAttribute("view-id");
+    if (viewId == null) {
+      viewId = this.getAttribute("location");
+    }
+    if (viewId != null) {
+      return this._button.onTap = (function(_this) {
+        return function() {
+          var dataKey, datasetKeys, key, params, _i, _len;
+          params = null;
+          datasetKeys = Object.keys(_this.dataset);
+          if ((datasetKeys != null) && datasetKeys.length) {
+            for (_i = 0, _len = datasetKeys.length; _i < _len; _i++) {
+              dataKey = datasetKeys[_i];
+              if (!(/^params/.test(dataKey))) {
+                continue;
+              }
+              if (params == null) {
+                params = {};
+              }
+              key = dataKey.replace(/^params(.*)$/, "$1").toLowerCase();
+              params[key] = _this.dataset[dataKey];
+            }
+          }
+          return supersonic.ui.layers.push(viewId, {
+            params: params
+          })["catch"](function(error) {
+            throw new Error("Failed to push view: " + error.message);
+          });
+        };
+      })(this);
+    } else {
+      return this._button.onTap = (function(_this) {
+        return function() {
+          return _this.click();
+        };
+      })(this);
+    }
+  };
+
+  SuperNavbarButtonPrototype._setButtonTitle = function() {
+    return this._button.title = this.textContent.trim();
+  };
+
+  SuperNavbarButtonPrototype.createdCallback = function() {
+    if (this.parentNode.nodeName !== "SUPER-NAVBAR") {
+      throw new Error("Component super-navbar-button must be an immediate child of super-navbar component");
+    }
+  };
+
+  SuperNavbarButtonPrototype.attachedCallback = function() {
+    var observerConfiguration;
+    observerConfiguration = {
+      childList: true,
+      attributes: true,
+      attributeFilter: ["style", "class", "side", "location", "view-id"]
+    };
+    observer.observe(this, observerConfiguration);
+    this._side = this.getAttribute("side");
+    this._button = new supersonic.ui.NavigationBarButton();
+    this._setButtonAction();
+    this._setButtonTitle();
+    return this.addToNavbar();
+  };
+
+  SuperNavbarButtonPrototype.detachedCallback = function() {
+    this.removeFromNavbar();
+    return observer.disconnect();
+  };
+
+  document.registerElement("super-navbar-button", {
+    prototype: SuperNavbarButtonPrototype
+  });
+
+}).call(this);
+
+</script>
+
+<style></style>
+<script>
+
+/*
+  * @namespace components
+  * @name super-navbar-title
+  * @component
+  * @description
+  * When used inside the `<super-navbar>` element, sets a title text on the view's navigation bar. Only text content is supported.
+  * @exampleHtml
+  * <!-- Full example including the navbar itself -->
+  * <super-navbar>
+  *   <super-navbar-title>This is the title</super-navbar-title>
+  * </super-navbar>
+  *
+  * <!-- Full example using ng-bind for title value -->
+  * <super-navbar>
+  *   <super-navbar-title ng-bind="titleFromScope"></super-navbar-title>
+  * </super-navbar>
+ */
+
+(function() {
+  var SuperNavbarTitlePrototype, observer, onContentChanged;
+
+  onContentChanged = function(node) {
+    return node.setParentTitle(node.textContent);
+  };
+
+  observer = new MutationObserver(function(mutations) {
+    var mutation, _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = mutations.length; _i < _len; _i++) {
+      mutation = mutations[_i];
+      if (mutation.type === "childList") {
+        _results.push(onContentChanged(mutation.target));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  });
+
+  SuperNavbarTitlePrototype = Object.create(HTMLElement.prototype);
+
+  SuperNavbarTitlePrototype.setParentTitle = function(title) {
+    if (this.parentNode.nodeName === "SUPER-NAVBAR") {
+      return this.parentNode.setTitle(title);
+    } else {
+      throw new Error("Component super-navbar-title must be an immediate child of super-navbar component");
+    }
+  };
+
+  SuperNavbarTitlePrototype.createdCallback = function() {
+    var observerConfiguration;
+    observerConfiguration = {
+      childList: true
+    };
+    observer.observe(this, observerConfiguration);
+    return onContentChanged(this);
+  };
+
+  SuperNavbarTitlePrototype.detachedCallback = function() {
+    return observer.disconnect();
+  };
+
+  document.registerElement("super-navbar-title", {
+    prototype: SuperNavbarTitlePrototype
+  });
+
+}).call(this);
+
+</script>
+
+<style></style>
+<script>
+(function() {
+  var SuperNavigatePrototype;
+
+  SuperNavigatePrototype = Object.create(HTMLElement.prototype);
+
+
+  /*
+    * @namespace components
+    * @name super-navigate
+    * @component
+    * @description
+    * Navigates to a view. Uses `supersonic.ui.layers.push` internally.
+    * @attribute location The route or URL for the view to be shown. Either `location` or `view-id` must be set.
+    * @attribute view-id The id of a started View that will be navigated to. If `view-id` is set, `location` will be ignored.
+    * @attribute action="click" The action used to trigger the transition.
+    * @exampleHtml
+    * <!-- The action attribute is optional -->
+    * <super-navigate location="cars#index">Open Cars index</super-navigate>
+    *
+    * <!-- Navigating to a started View is optional -->
+    * <super-navigate view-id="carsShow">Open Cars index</super-navigate>
+    * <!-- External URLs work too. -->
+    * <super-navigate location="http://google.com">Open Google</super-navigate>
+    *
+    * <!-- The default action can be overridden -->
+    * <super-navigate location="cars#show" action="touchmove">Show car</super-navigate>
+   */
+
+  SuperNavigatePrototype.createdCallback = function() {
+    var action;
+    action = this.getAttribute("action") || "click";
+    return this.addEventListener(action, (function(_this) {
+      return function() {
+        var dataKey, datasetKeys, key, locationOrId, params, _i, _len;
+        locationOrId = _this.getAttribute("view-id");
+        if (locationOrId == null) {
+          locationOrId = _this.getAttribute("location");
+        }
+        if (locationOrId == null) {
+          throw new Error("Either view-id or location attribute must be set for a super-navigate element");
+        }
+        params = null;
+        datasetKeys = Object.keys(_this.dataset);
+        if ((datasetKeys != null) && datasetKeys.length) {
+          for (_i = 0, _len = datasetKeys.length; _i < _len; _i++) {
+            dataKey = datasetKeys[_i];
+            if (!(/^params/.test(dataKey))) {
+              continue;
+            }
+            if (params == null) {
+              params = {};
+            }
+            key = dataKey.replace(/^params(.*)$/, "$1").toLowerCase();
+            params[key] = _this.dataset[dataKey];
+          }
+        }
+        return supersonic.ui.layers.push(locationOrId, {
+          params: params
+        })["catch"](function(error) {
+          throw new Error("Failed to push view: " + error);
+        });
+      };
+    })(this));
+  };
+
+  document.registerElement("super-navigate", {
+    prototype: SuperNavigatePrototype
+  });
+
+}).call(this);
+
+</script>
+
+<style></style>
+<script>
+(function() {
+  var SuperNavigateBackPrototype;
+
+  SuperNavigateBackPrototype = Object.create(HTMLElement.prototype);
+
+
+  /*
+    * @namespace components
+    * @name super-navigate-back
+    * @component
+    * @description
+    * Navigates back to the previous view. Uses `supersonic.ui.layers.pop()` internally.
+    * @attribute action="click" The action used to trigger the transition.
+    * @exampleHtml
+    * <!-- The action attribute is optional -->
+    * <super-navigate-back>Go back</super-navigate-back>
+    *
+    * <!-- The default action can be overridden -->
+    * <super-navigate-back action="touchmove">Go back</super-navigate-back>
+   */
+
+  SuperNavigateBackPrototype.createdCallback = function() {
+    var action;
+    action = this.getAttribute("action") || "click";
+    return this.addEventListener(action, function() {
+      return supersonic.ui.layers.pop();
+    });
+  };
+
+  document.registerElement("super-navigate-back", {
+    prototype: SuperNavigateBackPrototype
+  });
+
+}).call(this);
+
+</script>

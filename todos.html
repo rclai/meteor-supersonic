@@ -1,0 +1,18 @@
+<head>
+	<title>todos</title>
+	<link rel="import" href="/import.html">
+</head>
+
+<body>
+	<super-navbar>
+		<super-navbar-title>I'm native!</super-navbar-title>
+	</super-navbar>
+
+	<h1>Welcome to Meteor <i class="super super-alert"></i></h1>
+	{{> hello}}
+</body>
+
+<template name="hello">
+  <button>Click Me</button>
+  <p>You've pressed the button {{counter}} times.</p>
+</template>

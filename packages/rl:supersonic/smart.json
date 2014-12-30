@@ -1,0 +1,12 @@
+{
+  "packages": {
+    "bower": {}
+  },
+  "bower": {
+  	"steroids-js": "3.5.8",
+    "bluebird": "2.3.11",
+  	"deep-equal": "0.0.0",
+  	"bacon": "0.7.41",
+  	"localforage": "1.2.0"
+  }
+}
