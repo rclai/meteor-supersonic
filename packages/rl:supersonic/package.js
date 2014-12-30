@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 	// I also did find out that AppGyver did fork some of these plugins and distribute
 	// Supersonic with modified versions, but out of simplicity and to get things
 	// going I decided to include the original Apache ones
+	// EDIT - I FOUND OUT YOU DON'T REALLY NEED THESE BECAUSE STEROIDS LOADS THESE ALREADY
 	Cordova.depends({
 		'org.apache.cordova.dialogs': '0.2.11',
 		'org.apache.cordova.device-motion': '0.2.11',
