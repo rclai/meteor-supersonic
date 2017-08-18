@@ -26,7 +26,7 @@ Notes
 - Steroids reads the parent ```index.html``` file of the ```www``` folder. In that file there's a script reference to the ```meteor_cordova.loader.js``` file, which is what loads your Meteor app, which lives in your ```www/application/``` folder. 
 - I verified that it doesn't load the Meteor files ```www/meter_cordova_loader.js, line 57``` because ```cordova.plugins``` is ```undefined```, so the app unfortunately crashes silently at that point.
 
-###Some Supersonic stuff I got working without Steroids + other notes###
+### Some Supersonic stuff I got working without Steroids + other notes ###
 
 - I was able to get the ```supersonic.ui.dialog``` API calls to work, but that's about it because they're just plain vanilla Cordova plugins. This is the only thing I tested.
 - I'm sure some other native calls work, that involve Supersonic wrapper functions around ```navigator.somePlugin.calls```, like geolocation and whatnot but that's about it.
